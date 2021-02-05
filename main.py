@@ -77,6 +77,18 @@ def arg_parser():
     parser.add_argument(
         "--debug", action="store_true", help="Show output on screen [debugging].",
     )
+    parser.add_argument(
+        "--width",
+        type=int,
+        default=640,
+        help="Input Width (Default: 640)",
+    )
+    parser.add_argument(
+        "--height",
+        type=int,
+        default=360,
+        help="Input Height (Default: 360)",
+    )
 
     return parser.parse_args()
 
@@ -92,6 +104,7 @@ def main(args):
     """
     # Initialise the video stream
     input_feed = InputFeeder(input_feed=args.input)
+    input_feed.resize_cam_input(args.height, args.width)
     # Initialise the speech output
     if args.enable_speech:
         # TODO: Add args for selecting language, accent and male/female voice
