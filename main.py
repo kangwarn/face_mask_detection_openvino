@@ -87,7 +87,6 @@ def main(args):
     and output stats and video.
 
     :param args: Command line arguments parsed by `build_argparser()`
-    :param client: MQTT client
     :return: None
     """
     # Initialise the video stream
