@@ -129,7 +129,7 @@ optional arguments:
 ### Example Usage
 
 ```bash
-make example
+make run-bootstrap
 ```
 
 ![ezgif-4-993045572ebb](https://user-images.githubusercontent.com/7910856/88237923-a8514500-cc80-11ea-9cc8-0692eb0c4d6e.gif)
