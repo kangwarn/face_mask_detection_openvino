@@ -75,3 +75,16 @@ run:  ## Run example
 		-i resources/mask.mp4 \
 		--debug \
 		--show-bbox"
+
+run-jupyter:  ## Run example
+	docker run -d --rm -ti --volume "$(CURDIR)":/app \
+	--volume /dev:/dev -p 8088:8888 \
+	--privileged $(OPENVINO_DOCKER_IMAGE) \
+	bash -c "source /opt/intel/openvino/bin/setupvars.sh && \
+	        /home/vino/.local/bin/jupyter-lab --ip=0.0.0.0"
+
+run-jupyter-old:  ## Run example
+	docker run --rm -ti --volume "$(CURDIR)":/app:rw \
+        --volume /dev:/dev \
+	--device /dev/snd --device /dev/fb0 -p 8088:8888 \
+	--device /dev/video0 --device /dev/dri --privileged $(OPENVINO_DOCKER_IMAGE) \
