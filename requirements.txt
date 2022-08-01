@@ -1,5 +1,7 @@
 gtts==2.0.4
 responsivevoice==0.5.3
 jupyterlab
+logger
+flask
 git+https://github.com/mmphego/pyvino_utils.git@v0.1.0
 

@@ -76,9 +76,15 @@ run:  ## Run example
 		--debug \
 		--show-bbox"
 
+test:
+	docker run -d --rm -ti --volume "$(CURDIR)":/app \
+	--volume /dev:/dev -p 8088:8888 -p 5000:5000 \
+	--privileged $(OPENVINO_DOCKER_IMAGE) \
+	bash 
+
 run-jupyter:  ## Run example
 	docker run -d --rm -ti --volume "$(CURDIR)":/app \
-	--volume /dev:/dev -p 8088:8888 \
+	--volume /dev:/dev -p 8088:8888 -p 5000:5000 \
 	--privileged $(OPENVINO_DOCKER_IMAGE) \
 	bash -c "source /opt/intel/openvino/bin/setupvars.sh && \
 	        /home/vino/.local/bin/jupyter-lab --ip=0.0.0.0"
