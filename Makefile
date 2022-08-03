@@ -3,6 +3,7 @@
 SHELL := /bin/bash
 # Name of docker image to be built.
 OPENVINO_DOCKER_IMAGE = "$(USER)/$(shell basename $(CURDIR))"
+# OPENVINO_DOCKER_IMAGE = "kangwarn/face_mask_detection_openvino:v2"
 # Get package name from pwd
 SOURCE_DIR = source /opt/intel/openvino/bin/setupvars.sh
 
@@ -81,6 +82,12 @@ test:
 	--volume /dev:/dev -p 8088:8888 -p 5000:5000 \
 	--privileged $(OPENVINO_DOCKER_IMAGE) \
 	bash 
+
+run-service:
+	docker run -d --rm -ti --volume "$(CURDIR)":/app \
+	--volume /dev:/dev -p 8088:8888 -p 5000:5000 \
+	--privileged $(OPENVINO_DOCKER_IMAGE) \
+	bash -c python3 face_mask.py --debug --show-bbox
 
 run-jupyter:  ## Run example
 	docker run -d --rm -ti --volume "$(CURDIR)":/app \

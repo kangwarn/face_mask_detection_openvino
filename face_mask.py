@@ -226,6 +226,7 @@ def gen_frames_inference():
             display.clear_output(wait=True)
             display.display(i)
             '''
+            input_feed.cap.set(cv2.CAP_PROP_POS_FRAMES,0)
 
     finally:
         # input_feed.close()
@@ -238,6 +239,7 @@ args = arg_parser()
 # logger.info(f"Loaded input source type: {self._input_type}")
 input_feed = InputFeeder(input_feed=args.input)
 input_feed.resize_cam_input(args.height, args.width)
+input_feed.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
 if args.enable_speech:
     # TODO: Add args for selecting language, accent and male/female voice
