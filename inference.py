@@ -90,15 +90,16 @@ class FaceDetection(Base):
             label[0], cv2.FONT_HERSHEY_PLAIN, fontScale=scale, thickness=thickness,
         )
 
-        cv2.putText(
-            image,
-            label[0],
-            org=(image.shape[0] // 3, image.shape[1] // 3),
-            fontFace=cv2.FONT_HERSHEY_PLAIN,
-            fontScale=scale,
-            color=label[1],
-            thickness=thickness,
-        )
+        if kwargs['show_label']:
+            cv2.putText(
+                image,
+                label[0],
+                org=(image.shape[0] // 3, image.shape[1] // 3),
+                fontFace=cv2.FONT_HERSHEY_PLAIN,
+                fontScale=scale,
+                color=label[1],
+                thickness=thickness,
+            )
 
 
 class MaskDetection(Base):

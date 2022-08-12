@@ -20,7 +20,7 @@ import numpy as np
 from loguru import logger
 import time
 
-from flask import Flask, render_template, Response
+from flask import Flask, render_template, Response, request
 
 import sys
 
@@ -137,7 +137,8 @@ def gen_frames_raw():
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + bytes_frame + b'\r\n')  # concat frame one by one
 
-def gen_frames_inference():       
+def gen_frames_inference():
+    global face_flag, mask_flag
     count = 0
     face_detect_infer_time = 0
     mask_detect_infer_time = 0
@@ -149,12 +150,16 @@ def gen_frames_inference():
         for frame in input_feed.next_frame():
             count += 1
 
-            start_time = time.time()
-            fd_results = face_detection.predict(
-                frame, show_bbox=args.show_bbox, mask_detected=mask_detected_prob
-            )
-            face_detect_infer_time_samples.append(time.time() - start_time)
-            face_bboxes = fd_results["process_output"]["bbox_coord"]
+            if face_flag:
+                start_time = time.time()
+                fd_results = face_detection.predict(
+                    frame, show_bbox=args.show_bbox, mask_detected=mask_detected_prob,
+                    show_label=mask_flag
+                )
+                face_detect_infer_time_samples.append(time.time() - start_time)
+                face_bboxes = fd_results["process_output"]["bbox_coord"]
+            else:
+                face_bboxes = False
             if face_bboxes:
                 for face_bbox in face_bboxes:
                     # Useful resource:
@@ -176,20 +181,21 @@ def gen_frames_inference():
                     if face_height < 20 or face_width < 20:
                         continue
 
-                    start_time = time.time()
-                    md_results = mask_detection.predict(
-                        face, show_bbox=args.show_bbox, frame=frame
-                    )
-                    mask_detect_infer_time_samples.append(time.time() - start_time)
-                    mask_detected_prob = md_results["process_output"][
-                        "flattened_predictions"
-                    ]
-                    if (
-                        int(count) % 200 == 1
-                        and args.enable_speech
-                        and float(mask_detected_prob) < args.mask_prob_threshold
-                    ):
-                        engine.play_mp3(speak)
+                    if mask_flag:
+                        start_time = time.time()
+                        md_results = mask_detection.predict(
+                            face, show_bbox=args.show_bbox, frame=frame
+                        )
+                        mask_detect_infer_time_samples.append(time.time() - start_time)
+                        mask_detected_prob = md_results["process_output"][
+                            "flattened_predictions"
+                        ]
+                        if (
+                            int(count) % 200 == 1
+                            and args.enable_speech
+                            and float(mask_detected_prob) < args.mask_prob_threshold
+                        ):
+                            engine.play_mp3(speak)
 
             # Calculate the avg inferecing time every 200 samples
             if int(count) % 5 == 1:
@@ -234,6 +240,10 @@ def gen_frames_inference():
         
 # Parse arguments
 args = arg_parser()
+
+global face_flag, mask_flag
+face_flag = False
+mask_flag = False
        
 # Initialize the video stream
 # logger.info(f"Loaded input source type: {self._input_type}")
@@ -264,12 +274,24 @@ mask_detection = MaskDetection(
     threshold=args.mask_prob_threshold,
 )       
 logger.info(f"Elapsed time: {(time.time() - start_time)/1.0:.2f} secs")
-        
+
 # Start the Web service
 app = Flask(__name__, template_folder='./templates')
 
-@app.route('/')
+@app.route('/', methods=['POST', 'GET'])
 def index():
+    global face_flag, mask_flag
+    if request.method == 'POST':
+        if request.form.get('type') == "Video Only":
+            face_flag = False
+            mask_flag = False
+        elif request.form.get('type') == "Face Only":
+            face_flag = True
+            mask_flag = False
+        elif request.form.get('type') == "Mask Detection":
+            face_flag = True
+            mask_flag = True
+    
     return render_template('index.html')
 
 @app.route('/video_feed')

@@ -2,8 +2,16 @@
 <div class="container">
     <div class="row">
         <div class="col-lg-8  offset-lg-2">
-            <h3 class="mt-5">Live Streaming</h3>
-            <img src="{{ url_for('video_feed') }}" style="width:640px;height:480px">
+            <h3 class="mt-5">Edge Inferencing Demo</h3>
+			    <form method="post" action="{{ url_for('index') }}">
+                    <!--
+                    <input type="submit" value="Start/Stop" name="stop" />
+                    -->
+                    <input type="submit" value="Video Only" name="type" />
+                    <input type="submit" value="Face Only" name="type" />
+                    <input type="submit" value="Mask Detection" name="type" />
+                </form>            
+                <img src="{{ url_for('video_feed') }}" style="width:640px;height:480px">
         </div>
     </div>
 </div>
