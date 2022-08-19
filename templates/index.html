@@ -11,7 +11,7 @@
                     <input type="submit" value="Face Only" name="type" />
                     <input type="submit" value="Mask Detection" name="type" />
                 </form>            
-                <img src="{{ url_for('video_feed') }}" style="width:640px;height:480px">
+                <img src="{{ url_for('video_feed') }}" style="width:{{ width }};height:{{ height }}">
         </div>
     </div>
 </div>

@@ -292,7 +292,7 @@ def index():
             face_flag = True
             mask_flag = True
     
-    return render_template('index.html')
+    return render_template('index.html', height=args.height, width=args.width)
 
 @app.route('/video_feed')
 def video_feed():
